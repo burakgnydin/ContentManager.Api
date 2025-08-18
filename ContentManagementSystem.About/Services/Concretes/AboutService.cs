@@ -28,11 +28,11 @@ namespace ContentManagementSystem.About.Services.Concretes
 
             var newHistory = new History()
             {
+                Id = NewId.NextSequentialGuid(),
                 Title = createAboutDto.History.Title,
-                Description = createAboutDto.History.Description
-            };
-
-            var newAchievements = new List<Achievement>(_mapper.Map<List<Achievement>>(createAboutDto.Achievements));
+                Description = createAboutDto.History.Description,
+                CreatedDate = DateTime.UtcNow
+            }; 
 
             var newAbout = new Entities.About()
             {
@@ -40,7 +40,15 @@ namespace ContentManagementSystem.About.Services.Concretes
                 Title = createAboutDto.Title,
                 Description = createAboutDto.Description,
                 History = newHistory,
-                Achievements = newAchievements,
+                Achievements = new List<Achievement>(_mapper.Map<List<Achievement>>(createAboutDto.Achievements)).
+                Select(a => new Achievement
+                {
+                    Id = Guid.NewGuid(), 
+                    Title = a.Title,
+                    Description = a.Description,
+                    CreatedDate = DateTime.UtcNow
+                })
+            .ToList(),
                 CreatedDate = DateTime.UtcNow,
             };
 
@@ -93,6 +101,7 @@ namespace ContentManagementSystem.About.Services.Concretes
         {
             var about = await _context.Abouts.FirstOrDefaultAsync(x => x.Id == updateAboutDto.Id, cancellationToken);
 
+
             if (about is null)
             {
                 return ServiceResult.ErrorAsNotFound();
@@ -101,7 +110,6 @@ namespace ContentManagementSystem.About.Services.Concretes
             about.Title = updateAboutDto.Title;
             about.Description = updateAboutDto.Description;
             about.Achievements = _mapper.Map<List<Achievement>>(updateAboutDto.Achievements);
-            about.History = _mapper.Map<History>(updateAboutDto.History);
             about.UpdatedDate = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);
