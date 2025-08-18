@@ -1,0 +1,6 @@
+@ContentManagementSystem.HomePage_HostAddress = http://localhost:5138
+
+GET {{ContentManagementSystem.HomePage_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

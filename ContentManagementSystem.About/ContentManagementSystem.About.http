@@ -1,0 +1,6 @@
+@ContentManagementSystem.About_HostAddress = http://localhost:5032
+
+GET {{ContentManagementSystem.About_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

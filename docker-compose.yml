@@ -1,0 +1,70 @@
+services:
+  mongo_homePage:
+    restart: always
+    image: mongo:latest
+    container_name: mongo_homePage_container
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - "27031:27017"
+    volumes:
+      - mongo_homePage_volume:/data/db
+
+  mongo_homePage_ui:
+    image: mongo-express:1.0.2-20-alpine3.19
+    container_name: mongo_homePage_ui_container
+    ports:
+      - "27034:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo_homePage:27017/
+      ME_CONFIG_BASICAUTH: false
+
+  mongo_about:
+    restart: always
+    image: mongo:latest
+    container_name: mongo_about_container
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - "27032:27017"
+    volumes:
+      - mongo_about_volume:/data/db
+
+  mongo_about_ui:
+    image: mongo-express:1.0.2-20-alpine3.19
+    container_name: mongo_about_ui_container
+    ports:
+      - "27036:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo_about:27017/
+      ME_CONFIG_BASICAUTH: false
+
+  redis_main:
+    restart: always
+    image: redis:latest
+    container_name: redis_main_container
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_main_volume:/data
+
+  redis_main_ui:
+    restart: always
+    image: rediscommander/redis-commander:latest
+    container_name: redis_main_ui_container
+    ports:
+      - "27035:8081"
+    environment:
+      REDIS_HOST: redis_main
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      HTTP_USER: ${REDIS_UI_USERNAME}
+      HTTP_PASSWORD: ${REDIS_UI_PASSWORD}
+
+volumes:
+  mongo_homePage_volume:
+  mongo_about_volume:
+  redis_main_volume:
