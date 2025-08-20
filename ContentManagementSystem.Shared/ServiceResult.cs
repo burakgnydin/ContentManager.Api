@@ -7,6 +7,11 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace ContentManagementSystem.Shared
 {
+
+    public interface IRequestByServiceResult<T> : IRequest<ServiceResult<T>>;
+
+    public interface IRequestByServiceResult : IRequest<ServiceResult>;
+
     public class ServiceResult
     {
         [JsonIgnore] public HttpStatusCode StatusCode { get; set; }

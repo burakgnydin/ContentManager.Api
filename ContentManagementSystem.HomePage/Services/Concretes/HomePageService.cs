@@ -3,7 +3,6 @@ using ContentManagementSystem.HomePage.Entities.Dtos;
 using ContentManagementSystem.HomePage.Repositories;
 using ContentManagementSystem.HomePage.Services.Abstracts;
 using ContentManagementSystem.Shared;
-using ContentManagementSystem.Shared.Models;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
@@ -24,17 +23,9 @@ namespace ContentManagementSystem.HomePage.Services.Concretes
 
         public async Task<ServiceResult<CreateHomePageDto>> CreateHomePageAsync(CreateHomePageDto createHomePageDto, CancellationToken cancellationToken)
         {
-            var value = _mapper.Map<Entities.HomePage>(createHomePageDto);
-
-            var newHomePage = new Entities.HomePage()
-            {
-                Id = NewId.NextSequentialGuid(),
-                Title = createHomePageDto.Title,
-                Description = createHomePageDto.Description,
-                VideoUrl = createHomePageDto.VideoUrl,
-                ImageUrl = createHomePageDto.ImageUrl,
-                CreatedDate = DateTime.UtcNow,
-            };
+            var newHomePage = _mapper.Map<Entities.HomePage>(createHomePageDto);
+            newHomePage.Id = NewId.NextSequentialGuid();
+            newHomePage.CreatedDate = DateTime.UtcNow;
 
             await _context.HomePages.AddAsync(newHomePage, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);

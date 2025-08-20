@@ -1,6 +1,5 @@
 ﻿using ContentManagementSystem.About.Entities.Dtos;
 using ContentManagementSystem.Shared;
-using ContentManagementSystem.Shared.Models;
 
 namespace ContentManagementSystem.About.Services.Abstracts
 {

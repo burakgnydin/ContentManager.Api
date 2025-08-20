@@ -41,6 +41,76 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo_about:27017/
       ME_CONFIG_BASICAUTH: false
 
+  blog_postgres:
+    image: postgres:16
+    container_name: blog_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - blog_postgres:/var/lib/postgresql/data
+
+  blog_postgres_ui:
+    image: dpage/pgadmin4
+    container_name: blog_postgres_ui
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: mysupersecret
+    ports:
+      - "5050:80"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    container_name: elastics_blog
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - ELASTIC_USERNAME=${ELASTIC_USERNAME}   
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - xpack.security.enabled=false  
+    ports:
+      - "9200:9200"
+    volumes:
+      - elastics_data_volume:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.0
+    container_name: kibana_blog
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=${ELASTIC_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  mongo_contact:
+    restart: always
+    image: mongo:latest
+    container_name: mongo_contact_container
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - "27033:27017"
+    volumes:
+      - mongo_contact_volume:/data/db
+
+  mongo_contact_ui:
+    image: mongo-express:1.0.2-20-alpine3.19
+    container_name: mongo_contact_ui_container
+    ports:
+      - "27037:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo_contact:27017/
+      ME_CONFIG_BASICAUTH: false
+
   redis_main:
     restart: always
     image: redis:latest
@@ -67,4 +137,8 @@ services:
 volumes:
   mongo_homePage_volume:
   mongo_about_volume:
+  blog_postgres:
+  elastics_data_volume:
+  mongo_contact_volume:
   redis_main_volume:
+
