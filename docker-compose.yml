@@ -1,49 +1,7 @@
 services:
-  mongo_homePage:
-    restart: always
-    image: mongo:latest
-    container_name: mongo_homePage_container
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-    ports:
-      - "27031:27017"
-    volumes:
-      - mongo_homePage_volume:/data/db
-
-  mongo_homePage_ui:
-    image: mongo-express:1.0.2-20-alpine3.19
-    container_name: mongo_homePage_ui_container
-    ports:
-      - "27034:8081"
-    environment:
-      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo_homePage:27017/
-      ME_CONFIG_BASICAUTH: false
-
-  mongo_about:
-    restart: always
-    image: mongo:latest
-    container_name: mongo_about_container
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-    ports:
-      - "27032:27017"
-    volumes:
-      - mongo_about_volume:/data/db
-
-  mongo_about_ui:
-    image: mongo-express:1.0.2-20-alpine3.19
-    container_name: mongo_about_ui_container
-    ports:
-      - "27036:8081"
-    environment:
-      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo_about:27017/
-      ME_CONFIG_BASICAUTH: false
-
-  blog_postgres:
+  postgres:
     image: postgres:16
-    container_name: blog_postgres
+    container_name: postgres
     restart: always
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -54,9 +12,9 @@ services:
     volumes:
       - blog_postgres:/var/lib/postgresql/data
 
-  blog_postgres_ui:
+  postgres_ui:
     image: dpage/pgadmin4
-    container_name: blog_postgres_ui
+    container_name: postgres_ui
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
@@ -90,26 +48,28 @@ services:
     depends_on:
       - elasticsearch
 
-  mongo_contact:
+  keycloak:
     restart: always
-    image: mongo:latest
-    container_name: mongo_contact_container
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:25.0
+    command: start
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HOSTNAME_STRICT: false
+      KC_HEALTH_ENABLED: true
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres/${POSTGRES_DB}
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "27033:27017"
-    volumes:
-      - mongo_contact_volume:/data/db
-
-  mongo_contact_ui:
-    image: mongo-express:1.0.2-20-alpine3.19
-    container_name: mongo_contact_ui_container
-    ports:
-      - "27037:8081"
-    environment:
-      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo_contact:27017/
-      ME_CONFIG_BASICAUTH: false
+      - "8081:8080"
+    depends_on:
+      - postgres
 
   redis_main:
     restart: always
@@ -134,11 +94,35 @@ services:
       HTTP_USER: ${REDIS_UI_USERNAME}
       HTTP_PASSWORD: ${REDIS_UI_PASSWORD}
 
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - loki
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+  loki:
+    image: grafana/loki:2.9.1
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki-data:/loki
+
+
 volumes:
   mongo_homePage_volume:
   mongo_about_volume:
   blog_postgres:
   elastics_data_volume:
   mongo_contact_volume:
+  posrgres.db.keycloak.volume:
+  posrgres.db.keycloak.ui.volume:
   redis_main_volume:
+  grafana-data:
+  loki-data:
 

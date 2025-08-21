@@ -1,26 +1,13 @@
-﻿using ContentManagementSystem.Shared.DatabaseSettings;
-using MongoDB.Driver;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ContentManagementSystem.HomePage.Repositories
 {
     public static class RepositoryExt
     {
-        public static IServiceCollection AddDatabaseServiceExt(this IServiceCollection services)
+        public static IServiceCollection AddDatabaseServiceExt(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IMongoClient, MongoClient>(sp =>
-            {
-                var options = sp.GetRequiredService<MongoSettings>();
-                return new MongoClient(options.ConnectionString);
-            });
-
-            services.AddScoped(sp =>
-            {
-                var mongoClient = sp.GetRequiredService<IMongoClient>();
-                var options = sp.GetRequiredService<MongoSettings>();
-
-                return AppDbContext.Create(mongoClient.GetDatabase(options.DatabaseName));
-            });
-
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(configuration.GetConnectionString("Postgres")));
 
             return services;
         }

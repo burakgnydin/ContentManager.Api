@@ -2,14 +2,12 @@ using ContentManagementSystem.About;
 using ContentManagementSystem.About.Repositories;
 using ContentManagementSystem.About.Services.Abstracts;
 using ContentManagementSystem.About.Services.Concretes;
-using ContentManagementSystem.HomePage.Shared.DatabaseSettings;
 using ContentManagementSystem.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSwaggerGen();
-builder.Services.AddSettingsExt();
-builder.Services.AddDatabaseServiceExt();
+builder.Services.AddDatabaseServiceExt(builder.Configuration);
 builder.Services.AddCommonServiceExt(typeof(AboutAssembly));
 builder.Services.AddApiVersioningExt();
 builder.Services.AddControllers();

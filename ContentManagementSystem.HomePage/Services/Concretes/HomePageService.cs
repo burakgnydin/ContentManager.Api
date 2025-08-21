@@ -60,33 +60,6 @@ namespace ContentManagementSystem.HomePage.Services.Concretes
             return ServiceResult<HomePageDto>.SuccessAsOk(homePageAsDto);
         }
 
-        //public async Task<ServiceResult<List<HomePageDto>>> GetHomePagesAsync(CancellationToken cancellationToken)
-        //{
-        //    var homePages = await _context.HomePages.ToListAsync(cancellationToken);
-
-        //    var homePagesAsDto = _mapper.Map<List<HomePageDto>>(homePages);
-
-        //    return ServiceResult<List<HomePageDto>>.SuccessAsOk(homePagesAsDto);
-        //}
-
-        //public async Task<ServiceResult<PagedResult<HomePageDto>>> GetHomePagesByPaginationAsync(int page, CancellationToken cancellationToken)
-        //{
-        //    var pageResults = 3f;
-        //    var homePages = await _context.HomePages.ToListAsync(cancellationToken);
-        //    var pageCount = Math.Ceiling((homePages).Count / pageResults);
-        //    var pagedHomePages = await _context.HomePages.Skip((page - 1) * (int)pageResults).Take((int)pageResults).ToListAsync(cancellationToken);
-        //    var homePagesAsDto = _mapper.Map<List<HomePageDto>>(pagedHomePages);
-
-        //    var pageResult = new PagedResult<HomePageDto>()
-        //    {
-        //        Pages = (int)pageCount,
-        //        Data = homePagesAsDto,
-        //        CurrentPage = page
-        //    };
-
-        //    return ServiceResult<PagedResult<HomePageDto>>.SuccessAsOk(pageResult);
-        //}
-
         public async Task<ServiceResult> UpdateHomePageAsync(UpdateHomePageDto updateHomePageDto, CancellationToken cancellationToken)
         {
             var value = await _context.HomePages.FirstOrDefaultAsync(x => x.Id == updateHomePageDto.Id, cancellationToken);
@@ -100,7 +73,7 @@ namespace ContentManagementSystem.HomePage.Services.Concretes
             value.Description = updateHomePageDto.Description;
             value.VideoUrl = updateHomePageDto.VideoUrl;
             value.ImageUrl = updateHomePageDto.ImageUrl;
-            value.UpdatedDate = DateTime.Now;
+            value.UpdatedDate = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(cancellationToken);
 

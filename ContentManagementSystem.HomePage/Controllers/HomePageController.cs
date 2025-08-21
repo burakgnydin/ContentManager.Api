@@ -2,7 +2,6 @@
 using ContentManagementSystem.HomePage.Entities.Dtos;
 using ContentManagementSystem.HomePage.Services.Abstracts;
 using ContentManagementSystem.Shared;
-using ContentManagementSystem.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContentManagementSystem.HomePage.Controllers
@@ -50,22 +49,6 @@ namespace ContentManagementSystem.HomePage.Controllers
 
             return Ok(result);
         }
-
-        //[HttpGet("get-home-pages/")]
-        //public async Task<ActionResult<ServiceResult<List<HomePageDto>>>> GetHomePagesAsync(CancellationToken cancellationToken)
-        //{
-        //    var result = await _homePageService.GetHomePagesAsync(cancellationToken);
-
-        //    return Ok(result);
-        //}
-
-        //[HttpGet("get-home-pages-by-pagination/{page:int}")]
-        //public async Task<ActionResult<ServiceResult<PagedResult>>> GetHomePagesByPaginationAsync(int page, CancellationToken cancellationToken)
-        //{
-        //    var result = await _homePageService.GetHomePagesByPaginationAsync(page,cancellationToken);
-
-        //    return Ok(result);
-        //}
 
     }
 }

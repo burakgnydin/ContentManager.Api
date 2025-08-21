@@ -9,20 +9,30 @@ namespace ContentManagementSystem.HomePage.Repositories
         public DbSet<Entities.HomePage> HomePages { get; set; }
 
 
-        public static AppDbContext Create(IMongoDatabase database)
-        {
-            var optionsBuilder =
-                new DbContextOptionsBuilder<AppDbContext>().UseMongoDB(database.Client,
-                    database.DatabaseNamespace.DatabaseName);
-
-
-            return new AppDbContext(optionsBuilder.Options);
-        }
-
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Entities.HomePage>(entity =>
+            {
+                entity.ToTable("HomePages");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Title)
+                    .IsRequired();
+
+                entity.Property(e => e.Description)
+                    .IsRequired();
+
+                entity.Property(e => e.ImageUrl);
+
+                entity.Property(e => e.VideoUrl);
+
+                entity.Property(e => e.CreatedDate);
+
+                entity.Property(e => e.UpdatedDate);
+            });
         }
     }
 }

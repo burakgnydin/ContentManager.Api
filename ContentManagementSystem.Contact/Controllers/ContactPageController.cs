@@ -2,7 +2,6 @@
 using ContentManagementSystem.Contact.Entities.Dtos;
 using ContentManagementSystem.Contact.Services.Abstracts;
 using ContentManagementSystem.Shared;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContentManagementSystem.Contact.Controllers
